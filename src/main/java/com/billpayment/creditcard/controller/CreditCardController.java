@@ -7,10 +7,7 @@ import com.billpayment.creditcard.service.CreditCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CreditCardController {
@@ -57,4 +54,25 @@ public class CreditCardController {
         }
         return creditCardService.loginUser(userDetailRequest);
     }
+
+    /*
+     * Get mapping for fetching credit card detail
+     *
+     * */
+
+    @GetMapping("fetch-creditCard-detail/{creditCardId}")
+    public ResponseEntity<BaseResponse> fetchCreditCardDetail(@PathVariable int creditCardId)
+    {
+        if (creditCardId==0)
+        {
+            BaseResponse baseResponse=new BaseResponse();
+            baseResponse.setMessage("credit card id can not null");
+            baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
+            baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+
+            return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
+        }
+        return creditCardService.fetchCreditCardDetail(creditCardId);
+    }
+
 }

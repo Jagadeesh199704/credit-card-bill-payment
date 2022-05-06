@@ -1,11 +1,17 @@
 package com.billpayment.creditcard.dto;
 
-import java.util.Date;
 
+import lombok.*;
+
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class SbiTransactionResponse {
+
 
     private int sbiTransactionId;
 
-    private Date sbiTransactionDate;
+    private Data sbiTransactionDate;
     private int sbiTransactionAmount;
 }
