@@ -19,6 +19,8 @@ public class User {
     private int userId;
     private String userName;
     private String mobileNo;
+    private String userEmail;
+    private String userPassword;
 
     @OneToMany(mappedBy = "user")
     private List<CreditCard> creditCards;
