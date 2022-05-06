@@ -1,5 +1,6 @@
 package com.billpayment.creditcard.dto;
 
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,11 +15,12 @@ import java.util.List;
 @EqualsAndHashCode
 public class TransactionDetailRequest {
 
+
     private int transactionId;
 
     private Date transactionDate;
     private int transactionAmount;
-    List<HdfcTransactionResponse> hdfcTransactionResponseList;
-    List<SbiTransactionResponse> sbiTransactionResponseList;
-    List<CANARATransactionResponse> canaraTransactionResponseList;
+    List<HdfcTransactionResponse> hdfcTransactionList;
+    List<SbiTransactionResponse> sbiTransactionList;
+
 }
