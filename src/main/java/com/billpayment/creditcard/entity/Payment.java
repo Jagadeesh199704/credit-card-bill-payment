@@ -6,26 +6,22 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name="transaction")
-public class Transaction {
+@Table(name = "payment")
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int transactionId;
+    @Column(name = "id")
+    private int paymentId;
 
-    private Date transactionDate;
+    @Column(name = "paymentAmount")
+    private int paymentAmount;
 
-    private int transactionAmount;
-
-    @Column(name="creditCardId")
-    private int creditCardId;
-
-
-
+    @Column(name = "paymentDate")
+    private Date paymentDate;
 }

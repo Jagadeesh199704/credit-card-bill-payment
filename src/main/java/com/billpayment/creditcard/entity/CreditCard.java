@@ -16,12 +16,18 @@ public class CreditCard {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int creditCardId;
+
     private String creditCardName;
+
     private int creditCardBalance;
+
     private int creditCardExpense;
+
     private int creditCardLimit;
 
 
     @ManyToOne()
     private User user;
+
+
 }

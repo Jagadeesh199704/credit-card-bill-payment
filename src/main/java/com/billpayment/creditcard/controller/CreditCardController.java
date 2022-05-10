@@ -1,21 +1,22 @@
 package com.billpayment.creditcard.controller;
 
 import com.billpayment.creditcard.dto.BaseResponse;
-import com.billpayment.creditcard.dto.RegisterDetailRequest;
+import com.billpayment.creditcard.dto.PaymentRequest;
 import com.billpayment.creditcard.dto.UserDetailRequest;
 import com.billpayment.creditcard.service.CreditCardService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
+@CrossOrigin(origins = "*")
 public class CreditCardController {
 
     @Autowired
     private CreditCardService creditCardService;
-
-
     /*
      * post mapping for register user detail
      *
@@ -75,4 +76,23 @@ public class CreditCardController {
         return creditCardService.fetchCreditCardDetail(creditCardId);
     }
 
+    /**
+     *
+     * @param paymentRequest
+     * @return
+     */
+    @PostMapping("payment-details")
+    public ResponseEntity<BaseResponse> fetchPaymentDetail(@RequestBody PaymentRequest paymentRequest)
+    {
+        if (paymentRequest.getPaymentAmount() ==0 || paymentRequest.getPaymentType() == null)
+        {
+            BaseResponse baseResponse=new BaseResponse();
+            baseResponse.setMessage("Payment amount cannot be Zero");
+            baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
+            baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+
+            return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
+        }
+        return creditCardService.fetchPaymentDetails(paymentRequest);
+    }
 }
