@@ -10,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CreditCardServiceImpl implements CreditCardService {
@@ -29,9 +27,6 @@ public class CreditCardServiceImpl implements CreditCardService {
 
     @Autowired
     private TransactionDAO transactionDAO;
-
-    @Autowired
-    private HdfcTransactionDAO hdfcTransactionDAO;
 
     /*
      * post mapping for register user detail
@@ -84,75 +79,67 @@ public class CreditCardServiceImpl implements CreditCardService {
     }
 
     /*
-     * method for fetching credit card detail
+     * method for fetching credit card transaction detail
      * */
     @Override
-    public ResponseEntity<BaseResponse> fetchCreditCardDetail(int creditCardId) {
-
-        Optional<CreditCard> creditCard = creditCardDAO.findById(creditCardId);
-        CreditCard creditCard1 = new CreditCard();
-        CreditCard card = creditCard.get();
-
-        creditCard1.setCreditCardId(card.getCreditCardId());
-        creditCard1.setCreditCardName(card.getCreditCardName());
-        creditCard1.setCreditCardLimit(card.getCreditCardLimit());
-        creditCard1.setCreditCardExpense(card.getCreditCardExpense());
-        creditCard1.setCreditCardBalance(card.getCreditCardBalance());
-
+    public ResponseEntity<BaseResponse> fetchTransactionDetail(int transactionId) {
         BaseResponse baseResponse = new BaseResponse();
 
-        switch (creditCardId) {
-            case 1:
 
-                HdfcCreditCardResponse hdfcCreditCardResponse = new HdfcCreditCardResponse();
-                hdfcCreditCardResponse.setHDFCCreditCardId(1);
-                hdfcCreditCardResponse.setHDFCCreditCardBalance(60000);
-                hdfcCreditCardResponse.setHDFCCreditCardLimit(100000);
-                hdfcCreditCardResponse.setHDFCCreditCardName("HDFC");
-                hdfcCreditCardResponse.setHDFCCreditCardExpense(500);
-                baseResponse.setMessage(" HDFC credit card record found successfully");
+        List<Transaction> transactionList = Collections.singletonList(transactionDAO.findDetailsByTransactionId(transactionId));
 
+        TransactionDetailRequest transactionDetailRequest = new TransactionDetailRequest();
 
-                Optional<HdfcTransaction> transaction= Optional.of(hdfcTransactionDAO.getById(creditCardId));
-                List<HdfcTransactionResponse> transactions=new ArrayList<>();
+        List<CreditCardDetail> creditCardDetails = new ArrayList<>();
+        for(Transaction transactionHistory:transactionList){
+            CreditCardDetail creditCardDetail = new CreditCardDetail();
+            creditCardDetail.setCreditCardId(transactionHistory.getTransactionId());
+            creditCardDetail.setCreditCardBalance(transactionHistory.getTransactionAmount());
 
-                for(HdfcTransactionResponse transactionHistory:transactions)
-                {
-
-                    HdfcTransactionResponse hdfcTransactionResponse=new HdfcTransactionResponse();
-                    hdfcTransactionResponse.setHdfcTransactionId(transaction.get().getHdfcTransactionId());
-                    hdfcTransactionResponse.setHdfcTransactionAmount(transaction.get().getHdfcTransactionAmount());
-                    hdfcTransactionResponse.setHdfcTransactionDate(transaction.get().getHdfcTransactionDate());
-                    //System.out.println(transactionHistory);
-
-                }
-                break;
-
-            case 2:
-                SbiCreditCardResponse sbiCreditCardResponse = new SbiCreditCardResponse();
-                sbiCreditCardResponse.setSBICreditCardId(2);
-                sbiCreditCardResponse.setSBICreditCardName("SBI");
-                sbiCreditCardResponse.setSBICreditCardBalance(50000);
-                sbiCreditCardResponse.setSBICreditCardExpense(4500);
-                sbiCreditCardResponse.setSBICreditCardLimit(1000000);
-
-                baseResponse.setMessage(" SBI credit card record found successfully");
-                break;
-            case 3:
-                CANARACreditCardResponse canaraCreditCardResponse= new CANARACreditCardResponse();
-                canaraCreditCardResponse.setCANARACreditCardId(3);
-                canaraCreditCardResponse.setCANARACreditCardName("CANARA CARD");
-                canaraCreditCardResponse.setCANARACreditCardBalance(25000);
-                canaraCreditCardResponse.setCANARACreditCardLimit(70000);
-                canaraCreditCardResponse.setCANARACreditCardExpense(23000);
-
-                baseResponse.setMessage(" CANARA BANK CREDIT CARD FOUND");
-
-
-                break;
-            default:
-                baseResponse.setMessage("  no record found ");
+            creditCardDetails.add(creditCardDetail);
         }
+
+        transactionDetailRequest.setCreditCardDetails(creditCardDetails);
+
+        baseResponse.setMessage("Transaction data found successfully");
+        baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+        baseResponse.setHttpStatus(HttpStatus.OK);
         return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    }
+/*
+* payment
+* */
+    @Override
+    public ResponseEntity<BaseResponse> fetchPaymentDetails(PaymentRequest paymentRequest) {
+        int amount = 0;
+        BaseResponse baseResponse = new BaseResponse();
+
+        Optional<CreditCard> creditCard = creditCardDAO.findById(paymentRequest.getCreditCardId());
+        if (!creditCard.isPresent()){
+            baseResponse.setMessage("Card not found");
+            baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
+            baseResponse.setHttpStatusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        Transaction transaction = new Transaction();
+
+
+        transaction.setTransactionAmount(paymentRequest.getPaymentAmount());
+        transaction.setTransactionDate(new Date());
+        transaction.setCreditCardId(paymentRequest.getCreditCardId());
+        transactionDAO.save(transaction);
+
+        amount = creditCard.get().getCreditCardBalance() + paymentRequest.getPaymentAmount();
+        int updatedExpenses = creditCard.get().getCreditCardExpense() - paymentRequest.getPaymentAmount();
+        creditCard.get().setCreditCardBalance(amount);
+        creditCard.get().setCreditCardExpense(updatedExpenses);
+        creditCardDAO.save(creditCard.get());
+
+        baseResponse.setMessage("Payment Successful");
+        baseResponse.setHttpStatus(HttpStatus.OK);
+        baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+
+        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+
     }
 }

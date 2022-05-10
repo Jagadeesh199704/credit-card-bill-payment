@@ -19,8 +19,8 @@ public class TransactionDetailRequest {
     private int transactionId;
 
     private Date transactionDate;
-    private int transactionAmount;
-    List<HdfcTransactionResponse> hdfcTransactionList;
-    List<SbiTransactionResponse> sbiTransactionList;
 
+    private int transactionAmount;
+
+    private List<CreditCardDetail> creditCardDetails;
 }

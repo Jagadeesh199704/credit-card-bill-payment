@@ -20,7 +20,4 @@ public class CreditCardDetail {
     private int creditCardLimit;
     private int creditCardExpense;
 
-    private List<HdfcCreditCardResponse> hdfcCreditCardResponses;
-    private List<SbiCreditCardResponse> sbiCreditCardResponses;
-
 }

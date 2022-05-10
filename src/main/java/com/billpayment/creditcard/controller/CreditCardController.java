@@ -1,21 +1,22 @@
 package com.billpayment.creditcard.controller;
 
 import com.billpayment.creditcard.dto.BaseResponse;
-import com.billpayment.creditcard.dto.RegisterDetailRequest;
+import com.billpayment.creditcard.dto.PaymentRequest;
 import com.billpayment.creditcard.dto.UserDetailRequest;
 import com.billpayment.creditcard.service.CreditCardService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
+@CrossOrigin(origins = "*")
 public class CreditCardController {
 
     @Autowired
     private CreditCardService creditCardService;
-
-
     /*
      * post mapping for register user detail
      *
@@ -60,19 +61,38 @@ public class CreditCardController {
      *
      * */
 
-    @GetMapping("fetch-creditCard-detail/{creditCardId}")
-    public ResponseEntity<BaseResponse> fetchCreditCardDetail(@PathVariable int creditCardId)
+    @GetMapping("fetch-transaction-detail/{transactionId}")
+    public ResponseEntity<BaseResponse> fetchCreditCardDetail(@PathVariable int transactionId)
     {
-        if (creditCardId==0)
+        if (transactionId==0 || String.valueOf(transactionId) == null)
         {
             BaseResponse baseResponse=new BaseResponse();
-            baseResponse.setMessage("credit card id can not null");
+            baseResponse.setMessage("Transaction id cannot be null");
             baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
             baseResponse.setHttpStatusCode(HttpStatus.OK.value());
 
             return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
         }
-        return creditCardService.fetchCreditCardDetail(creditCardId);
+        return creditCardService.fetchTransactionDetail(transactionId);
     }
 
+    /**
+     *
+     * @param paymentRequest
+     * @return
+     */
+    @PostMapping("payment-details")
+    public ResponseEntity<BaseResponse> fetchPaymentDetail(@RequestBody PaymentRequest paymentRequest)
+    {
+        if (paymentRequest.getPaymentAmount() ==0 || paymentRequest.getPaymentType() == null)
+        {
+            BaseResponse baseResponse=new BaseResponse();
+            baseResponse.setMessage("Payment amount cannot be Zero");
+            baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
+            baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+
+            return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
+        }
+        return creditCardService.fetchPaymentDetails(paymentRequest);
+    }
 }
