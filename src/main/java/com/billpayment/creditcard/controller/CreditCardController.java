@@ -61,19 +61,19 @@ public class CreditCardController {
      *
      * */
 
-    @GetMapping("fetch-creditCard-detail/{creditCardId}")
-    public ResponseEntity<BaseResponse> fetchCreditCardDetail(@PathVariable int creditCardId)
+    @GetMapping("fetch-transaction-detail/{transactionId}")
+    public ResponseEntity<BaseResponse> fetchCreditCardDetail(@PathVariable int transactionId)
     {
-        if (creditCardId==0)
+        if (transactionId==0 || String.valueOf(transactionId) == null)
         {
             BaseResponse baseResponse=new BaseResponse();
-            baseResponse.setMessage("credit card id can not null");
+            baseResponse.setMessage("Transaction id cannot be null");
             baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
             baseResponse.setHttpStatusCode(HttpStatus.OK.value());
 
             return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
         }
-        return creditCardService.fetchCreditCardDetail(creditCardId);
+        return creditCardService.fetchTransactionDetail(transactionId);
     }
 
     /**

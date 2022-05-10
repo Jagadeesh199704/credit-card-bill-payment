@@ -12,7 +12,9 @@ import lombok.ToString;
 public class PaymentRequest {
 
     private int creditCardId;
+
     private String paymentType;
+
     private int paymentAmount;
 
 

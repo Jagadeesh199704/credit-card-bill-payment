@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -24,6 +25,8 @@ public class CreditCard {
     private int creditCardExpense;
 
     private int creditCardLimit;
+
+    private Date creditCardDate;
 
 
     @ManyToOne()

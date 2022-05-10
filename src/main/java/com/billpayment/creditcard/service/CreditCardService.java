@@ -15,7 +15,7 @@ public interface CreditCardService {
 
     ResponseEntity<BaseResponse> loginUser( UserDetailRequest userDetailRequest);
 
-    ResponseEntity<BaseResponse> fetchCreditCardDetail(int creditCardId);
+    ResponseEntity<BaseResponse> fetchTransactionDetail(int transactionId);
 
     ResponseEntity<BaseResponse> fetchPaymentDetails(PaymentRequest paymentRequest);
 }
