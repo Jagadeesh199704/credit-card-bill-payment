@@ -53,6 +53,8 @@ public class CreditCardServiceImpl implements CreditCardService {
 
     }
 
+
+
     /*
      * post mapping for login
      * */
@@ -82,15 +84,60 @@ public class CreditCardServiceImpl implements CreditCardService {
      * method for fetching credit card transaction detail
      * */
     @Override
-    public ResponseEntity<BaseResponse> fetchTransactionDetail(int transactionId) {
+    public ResponseEntity<BaseResponse> fetchTransactionDetail(int creditId) {
         BaseResponse baseResponse = new BaseResponse();
 
 
-        List<Transaction> transactionList = Collections.singletonList(transactionDAO.findDetailsByTransactionId(transactionId));
+        List<Transaction> transactionList = transactionDAO.findDetailsByCreditId(creditId);
 
-        TransactionDetailRequest transactionDetailRequest = new TransactionDetailRequest();
+        TransactionListResponse transactionListResponse = new TransactionListResponse();
 
-        List<CreditCardDetail> creditCardDetails = new ArrayList<>();
+        List<TransactionResponse> transactionResponseList = new ArrayList<>();
+        for (Transaction transactionHistory : transactionList) {
+            TransactionResponse transactionResponse = new TransactionResponse();
+            transactionResponse.setTrasactionId(transactionHistory.getTransactionId());
+            transactionResponse.setTransactionAmount(transactionHistory.getTransactionAmount());
+            transactionResponse.setTransactionDate(transactionHistory.getTransactionDate());
+
+            transactionResponseList.add(transactionResponse);
+        }
+        transactionListResponse.setTransactionResponse(transactionResponseList);
+
+        baseResponse.setMessage("Transaction data found successfully");
+
+        baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+        baseResponse.setHttpStatus(HttpStatus.OK);
+        baseResponse.setResponse(transactionListResponse);
+        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    }
+    /*
+    * fetching cards
+    * */
+    @Override
+    public ResponseEntity<BaseResponse> fetchCreditCard(int userId) {
+
+        BaseResponse baseResponse = new BaseResponse();
+
+        List<CreditCard> creditCardList = creditCardDAO.findDetailsByUserID(userId);
+
+        CreditCardListResponse creditCardListResponse = new CreditCardListResponse();
+
+        List<CreditCardResponse> creditCardResponseList = new ArrayList<>();
+        for(CreditCard list:creditCardList){
+
+            CreditCardResponse creditCardResponse = new CreditCardResponse();
+            creditCardResponse.setCreditCardName(list.getCreditCardName());
+            creditCardResponse.setCreditCardId(list.getCreditCardId());
+            creditCardResponseList.add(creditCardResponse);
+        }
+        creditCardListResponse.setCreditCardResponse(creditCardResponseList);
+        baseResponse.setMessage("Credit cards found successfully");
+        baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+        baseResponse.setHttpStatus(HttpStatus.OK);
+        baseResponse.setResponse(creditCardListResponse);
+        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    }
+       /* List<CreditCardDetail> creditCardDetails = new ArrayList<>();
         for(Transaction transactionHistory:transactionList){
             CreditCardDetail creditCardDetail = new CreditCardDetail();
             creditCardDetail.setCreditCardId(transactionHistory.getTransactionId());
@@ -102,44 +149,47 @@ public class CreditCardServiceImpl implements CreditCardService {
         transactionDetailRequest.setCreditCardDetails(creditCardDetails);
 
         baseResponse.setMessage("Transaction data found successfully");
+
         baseResponse.setHttpStatusCode(HttpStatus.OK.value());
         baseResponse.setHttpStatus(HttpStatus.OK);
+//        baseResponse.setResponse(transactionDetailRequest);
         return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-    }
-/*
-* payment
-* */
-    @Override
-    public ResponseEntity<BaseResponse> fetchPaymentDetails(PaymentRequest paymentRequest) {
-        int amount = 0;
-        BaseResponse baseResponse = new BaseResponse();
+    }*/
+        /*
+         * payment
+         * */
+        @Override
+        public ResponseEntity<BaseResponse> fetchPaymentDetails (PaymentRequest paymentRequest){
+            int amount = 0;
+            BaseResponse baseResponse = new BaseResponse();
 
-        Optional<CreditCard> creditCard = creditCardDAO.findById(paymentRequest.getCreditCardId());
-        if (!creditCard.isPresent()){
-            baseResponse.setMessage("Card not found");
-            baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
-            baseResponse.setHttpStatusCode(HttpStatus.BAD_REQUEST.value());
+            Optional<CreditCard> creditCard = creditCardDAO.findById(paymentRequest.getCreditCardId());
+            if (!creditCard.isPresent()) {
+                baseResponse.setMessage("Card not found");
+                baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
+                baseResponse.setHttpStatusCode(HttpStatus.BAD_REQUEST.value());
+            }
+
+            Transaction transaction = new Transaction();
+
+
+            transaction.setTransactionAmount(paymentRequest.getPaymentAmount());
+            transaction.setTransactionDate(String.valueOf(new Date()));
+            transaction.setCreditCardId(paymentRequest.getCreditCardId());
+            transactionDAO.save(transaction);
+
+            amount = creditCard.get().getCreditCardBalance() + paymentRequest.getPaymentAmount();
+            int updatedExpenses = creditCard.get().getCreditCardExpense() - paymentRequest.getPaymentAmount();
+            creditCard.get().setCreditCardBalance(amount);
+            creditCard.get().setCreditCardExpense(updatedExpenses);
+            creditCardDAO.save(creditCard.get());
+
+            baseResponse.setMessage("Payment Successful");
+            baseResponse.setHttpStatus(HttpStatus.OK);
+            baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+
+            return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+
         }
-
-        Transaction transaction = new Transaction();
-
-
-        transaction.setTransactionAmount(paymentRequest.getPaymentAmount());
-        transaction.setTransactionDate(new Date());
-        transaction.setCreditCardId(paymentRequest.getCreditCardId());
-        transactionDAO.save(transaction);
-
-        amount = creditCard.get().getCreditCardBalance() + paymentRequest.getPaymentAmount();
-        int updatedExpenses = creditCard.get().getCreditCardExpense() - paymentRequest.getPaymentAmount();
-        creditCard.get().setCreditCardBalance(amount);
-        creditCard.get().setCreditCardExpense(updatedExpenses);
-        creditCardDAO.save(creditCard.get());
-
-        baseResponse.setMessage("Payment Successful");
-        baseResponse.setHttpStatus(HttpStatus.OK);
-        baseResponse.setHttpStatusCode(HttpStatus.OK.value());
-
-        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-
     }
-}
+

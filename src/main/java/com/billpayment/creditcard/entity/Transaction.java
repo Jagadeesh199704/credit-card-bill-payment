@@ -19,7 +19,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int transactionId;
 
-    private Date transactionDate;
+    private String transactionDate;
 
     private int transactionAmount;
 

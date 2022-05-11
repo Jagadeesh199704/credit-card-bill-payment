@@ -61,10 +61,10 @@ public class CreditCardController {
      *
      * */
 
-    @GetMapping("fetch-transaction-detail/{transactionId}")
-    public ResponseEntity<BaseResponse> fetchCreditCardDetail(@PathVariable int transactionId)
+    @GetMapping("fetch-transaction-detail/{creditId}")
+    public ResponseEntity<BaseResponse> fetchCreditCardDetail(@PathVariable int creditId)
     {
-        if (transactionId==0 || String.valueOf(transactionId) == null)
+        if (creditId==0 || String.valueOf(creditId) == null)
         {
             BaseResponse baseResponse=new BaseResponse();
             baseResponse.setMessage("Transaction id cannot be null");
@@ -73,11 +73,11 @@ public class CreditCardController {
 
             return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
         }
-        return creditCardService.fetchTransactionDetail(transactionId);
+        return creditCardService.fetchTransactionDetail(creditId);
     }
 
     /**
-     *
+     *Post mapping for payment
      * @param paymentRequest
      * @return
      */
@@ -95,4 +95,23 @@ public class CreditCardController {
         }
         return creditCardService.fetchPaymentDetails(paymentRequest);
     }
+
+    /*
+    * fetch credit card details
+    * */
+    @GetMapping("fetch-creditCards/{userId}")
+    public ResponseEntity<BaseResponse> fetchCreditCards(@PathVariable int userId)
+    {
+        if (userId==0 || String.valueOf(userId) == null)
+        {
+            BaseResponse baseResponse=new BaseResponse();
+            baseResponse.setMessage("Transaction id cannot be null");
+            baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
+            baseResponse.setHttpStatusCode(HttpStatus.OK.value());
+
+            return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
+        }
+        return creditCardService.fetchCreditCard(userId);
+    }
+
 }

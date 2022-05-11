@@ -26,7 +26,7 @@ public class CreditCard {
 
     private int creditCardLimit;
 
-    private Date creditCardDate;
+
 
 
     @ManyToOne()
