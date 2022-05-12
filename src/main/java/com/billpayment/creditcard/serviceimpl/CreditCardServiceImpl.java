@@ -114,11 +114,11 @@ public class CreditCardServiceImpl implements CreditCardService {
     * fetching cards
     * */
     @Override
-    public ResponseEntity<BaseResponse> fetchCreditCard(int userId) {
+    public ResponseEntity<BaseResponse> fetchCreditCard() {
 
         BaseResponse baseResponse = new BaseResponse();
 
-        List<CreditCard> creditCardList = creditCardDAO.findDetailsByUserID(userId);
+        List<CreditCard> creditCardList = creditCardDAO.findDetailsByUserID();
 
         CreditCardListResponse creditCardListResponse = new CreditCardListResponse();
 
@@ -191,5 +191,7 @@ public class CreditCardServiceImpl implements CreditCardService {
             return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 
         }
-    }
+
+
+}
 

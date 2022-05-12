@@ -17,6 +17,7 @@ public class CreditCardController {
 
     @Autowired
     private CreditCardService creditCardService;
+
     /*
      * post mapping for register user detail
      *
@@ -99,19 +100,13 @@ public class CreditCardController {
     /*
     * fetch credit card details
     * */
-    @GetMapping("fetch-creditCards/{userId}")
-    public ResponseEntity<BaseResponse> fetchCreditCards(@PathVariable int userId)
+    @GetMapping("fetch-creditCards")
+    public ResponseEntity<BaseResponse> fetchCreditCards()
     {
-        if (userId==0 || String.valueOf(userId) == null)
-        {
-            BaseResponse baseResponse=new BaseResponse();
-            baseResponse.setMessage("Transaction id cannot be null");
-            baseResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
-            baseResponse.setHttpStatusCode(HttpStatus.OK.value());
 
-            return new ResponseEntity<>(baseResponse,HttpStatus.BAD_REQUEST);
-        }
-        return creditCardService.fetchCreditCard(userId);
+        return creditCardService.fetchCreditCard();
     }
+
+
 
 }

@@ -11,11 +11,13 @@ import org.springframework.stereotype.Component;
 public interface CreditCardService {
     ResponseEntity<BaseResponse> userDetailRequest(UserDetailRequest userDetailRequest);
 
-    ResponseEntity<BaseResponse> fetchCreditCard(int userId);
+    ResponseEntity<BaseResponse> fetchCreditCard();
 
     ResponseEntity<BaseResponse> loginUser( UserDetailRequest userDetailRequest);
 
     ResponseEntity<BaseResponse> fetchTransactionDetail(int creditId);
 
     ResponseEntity<BaseResponse> fetchPaymentDetails(PaymentRequest paymentRequest);
+
+
 }
